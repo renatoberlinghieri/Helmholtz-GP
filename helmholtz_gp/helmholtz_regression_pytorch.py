@@ -1,8 +1,6 @@
 # Imports
 import os
 import numpy as np
-import matplotlib.pyplot as plt
-import time
 import torch
 
 # Hide any GPUs to that PyTorch uses CPU (typically preferable due to memory constraints)
