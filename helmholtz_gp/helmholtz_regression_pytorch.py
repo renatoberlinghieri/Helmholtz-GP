@@ -212,7 +212,7 @@ def posterior_kernel_twodata_cached(XY_test1, XY_test2, UV_train, XY_train, trai
         XY_test2: np.array of shape [N_test, 2] with X & Y coordinates of observations 
         UV_train: np.array of shape [N_train, 2] with U & V flow observations
         XY_train: np.array of shape [N_train, 2] with X & Y coordinates of test observations, usually on a grid
-        train_chol: np.array of shape ________ with Cholesky factor of GP prior matrix for training observations 
+        train_chol: np.array of shape [2*N_train, 2*N_train] with lower-triangular Cholesky factor of GP prior matrix for training observations 
         kind: flag indicating kernel of interest to be used, can be "standard" or "helmholtz"
         If "standard", for the parameters [1 = u], [2 = v]. If Helmholtz, [1=phi], [2=psi]. 
         params: parameter of the kernel, from the @dataclass TwoKernelGPParams
@@ -348,7 +348,7 @@ def posterior_components_grid_cached(XY_train, UV_train, XY_test1, XY_test2, tra
         UV_train: np.array of shape [N_train, 2] with U & V flow observations
         XY_test1: np.array of shape [N_test, 2] with X & Y coordinates of observations
         XY_test2: np.array of shape [N_test, 2] with X & Y coordinates of observations 
-        train_chol: np.array of shape ________ with Cholesky factor of GP prior matrix for training observations 
+        train_chol: np.array of shape [2*N_train, 2*N_train] with lower-triangular Cholesky factor of GP prior matrix for training observations 
         params: parameter of the kernel, from the @dataclass TwoKernelGPParams
         curl: if True, compute posterior for the rotation component
 
