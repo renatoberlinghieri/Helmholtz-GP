@@ -1,6 +1,6 @@
 # Helmholtz-GP
 
-PyTorch implementation of [Gaussian processes at the Helm(holtz): A more fluid model for ocean currents]{Gaussian processes at the Helm(holtz): A more fluid model for ocean currents](**Arxiv link**) by Renato Berlinghieri, Brian L. Trippe, David R. Burt, Ryan Giordano,
+PyTorch implementation of [Gaussian processes at the Helm(holtz): A more fluid model for ocean currents](**Arxiv link**) by Renato Berlinghieri, Brian L. Trippe, David R. Burt, Ryan Giordano,
 Kaushik Srinivasan, Tamay Özgökmen, Junfei Xia, and Tamara Broderick. 
 
 We present a method for modelling ocean currents given buoy data with Gaussian Processes (GPs) and an Helmholtz decomposition. In this repo we provide the code and the results for the following experiments:
