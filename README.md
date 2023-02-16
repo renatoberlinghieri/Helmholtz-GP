@@ -29,7 +29,7 @@ The structure of the repository is as follows:
 
 ## Basic usage
 
-1. --- install the package --- (add more details)
+1. Install the package. Navigate to the package root directory and run `python3 -m pip install .` Dependencies for the main package should be installed automatically. See the note below regarding installation of the Dissipative Hamiltonian Neural Networks code for recreating experiments in the notebooks. 
 2. Upload your data with the desired format and shape (as per the "helmholtz_regression_pytorch.py") documentation. 
 3. Fit the Helmholtz GP and compute predictions (step 3 in the demo notebooks)
 4. Fit the velocity GP and compute predictions (step 4 in the demo notebooks)
