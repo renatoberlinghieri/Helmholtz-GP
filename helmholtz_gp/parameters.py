@@ -89,11 +89,12 @@ def GLAD_standard_default_parameters():
         log_ls_u, log_sigma_u, log_ls_v, log_sigma_v, log_obs_noise
     )
 
+def initial_pararameters() -> Dict:
+    _initial_parameters = dict(helmholtz=dict(), standard=dict())
 
-initial_parameters = dict(helmholtz=dict(), standard=dict())
-
-for dataset_name in synthetic_datasets:
-    initial_parameters["helmholtz"][dataset_name] = synthetic_default_parameters()
-    initial_parameters["standard"][dataset_name] = synthetic_default_parameters()
-initial_parameters["helmholtz"]["GLAD_full"] = GLAD_helmholtz_default_parameters()
-initial_parameters["standard"]["GLAD_full"] = GLAD_standard_default_parameters()
+    for dataset_name in synthetic_datasets:
+        _initial_parameters["helmholtz"][dataset_name] = synthetic_default_parameters()
+        _initial_parameters["standard"][dataset_name] = synthetic_default_parameters()
+    _initial_parameters["helmholtz"]["GLAD_full"] = GLAD_helmholtz_default_parameters()
+    _initial_parameters["standard"]["GLAD_full"] = GLAD_standard_default_parameters()
+    return _initial_parameters # Return a new object to allow resetting of params

@@ -1,6 +1,8 @@
 import numpy as np
 import torch
 from scipy.integrate import solve_ivp
+from typing import Dict, List
+from numpy.typing import ArrayLike
 
 
 def make_xy_grid(space_lim, grid_pts, to_torch=True):
@@ -62,3 +64,38 @@ def dict_to_np(dictionary):
         np_dict[key] = new_val
 
     return np_dict
+
+def _to_torch(dictionary: Dict) -> Dict:
+    """
+    Given a dictionary containing values that may be numpy or torch arrays
+    return a new dictionary such that all values are torch arrays with the same
+    data type
+    """
+    new_dict = dict()
+    for k, v in dictionary.items():
+        if isinstance(v, np.ndarray):
+            new_v = torch.from_numpy(v)
+            if new_v.dtype in [
+                torch.float64,
+                torch.float32,
+            ]:  # if float cast so types match
+                new_v = new_v.double() if data_type == torch.float64 else new_v.float()
+        else:
+            new_v = v
+        new_dict[k] = new_v
+    return new_dict
+
+
+def _to_numpy(dictionary: Dict) -> Dict:
+    """
+    Convert all values in a dictionary that are torch tensors to numpy arrays
+    """
+    new_dict = dict()
+    for k, v in dictionary.items():
+        new_v = v.detach().numpy() if isinstance(v, torch.Tensor) else v
+        new_dict[k] = new_v
+    return new_dict
+
+
+def _list_to_numpy(lst: List[torch.Tensor]) -> List[ArrayLike]:
+    return [l.detach().numpy() for l in lst]
