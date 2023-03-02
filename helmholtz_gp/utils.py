@@ -4,6 +4,7 @@ from scipy.integrate import solve_ivp
 from typing import Dict, List
 from numpy.typing import ArrayLike
 
+data_type = torch.float32
 
 def make_xy_grid(space_lim, grid_pts, to_torch=True):
     X = np.linspace(-space_lim, space_lim, grid_pts)

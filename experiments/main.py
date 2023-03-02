@@ -33,15 +33,22 @@ def setup_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def load_data(dataset_name: str, cross_validation: bool = False) -> Dict:
+def load_data(
+    dataset_name: str,
+    cross_validation: bool = False,
+) -> Dict:
     """
     Load the dataset specified by dataset_name
     """
     data_dir = Path(Path(__file__).parent.parent, "data")
-    data = dict()  # init dictionary to return
-    for arr in ["XY_train", "XY_test", "UV_train", "UV_test"]:
-        load_path = Path(data_dir, f"{arr}_{args.dataset}.csv")
-        data[arr] = np.loadtxt(str(load_path), delimiter=",")
+    if cross_validation:  # We assume CV data is already in a dict
+        load_path = str(Path(data_dir, f"{args.dataset}.json"))
+        data = json_tricks.load(load_path)
+    else:
+        data = dict()  # init dictionary to return
+        for arr in ["XY_train", "XY_test", "UV_train", "UV_test"]:
+            load_path = Path(data_dir, f"{arr}_{args.dataset}.csv")
+            data[arr] = np.loadtxt(str(load_path), delimiter=",")
     return _to_torch(data)
 
 
@@ -88,13 +95,14 @@ def add_total_metric_info(results: Dict, metric_names: List = ["rmse"]) -> Dict:
     results["summary_metrics"] = dict()
     for metric in metric_names:
         all_vals = list()
+        results["summary_metrics"][metric] = dict()
         for k, v in results.items():
             if k.startswith("split_"):
                 all_vals.append(v["metrics"][metric])
                 metric_mean = np.mean(all_vals)
-                metric_std = np.std(all_vals)
+                # metric_std = np.std(all_vals)
                 results["summary_metrics"][metric]["mean"] = metric_mean
-                results["summary_metrics"][metric]["std"] = metric_std
+                # results["summary_metrics"][metric]["std"] = metric_std
 
     return results
 
@@ -125,12 +133,16 @@ def train_and_predict(args: argparse.Namespace, dataset: Dataset) -> Dict:
 
 if __name__ == "__main__":
     args = setup_args()  # Setup arguments
-    data = load_data(args.dataset)  # Load data, this is a dictionary
+    data = load_data(
+        args.dataset, args.cross_validation
+    )  # Load data, this is a dictionary
     results = dict()  # initialize a dictionary, we will add to it later
 
     if args.cross_validation:
         splits = build_data_iterator(data)  # Make an iterable to loop over
         for i, dataset in enumerate(splits):  # Loop over test train splits
+            if len(dataset.XY_test) == 0:
+                continue
             new_dict_entry = train_and_predict(args, dataset)
             results[f"split_{i}"] = new_dict_entry
         add_total_metric_info(results)  # Add summary statistics
