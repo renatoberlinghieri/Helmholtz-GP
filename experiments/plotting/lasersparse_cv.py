@@ -103,7 +103,7 @@ def plot_data_and_splits(dataset: Dict, all_results: List[Dict]):
 
 if __name__ == "__main__":
     experiments_dir = Path(__file__).parent.parent
-    data_dir = Path(experiments_dir.parent, "data")
+    data_dir = Path(experiments_dir.parent, "data/cv-iterables")
     results_dir = Path(experiments_dir, "results")
     # Load data and results
     data = load_data(data_dir)

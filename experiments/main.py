@@ -40,7 +40,7 @@ def load_data(
     """
     Load the dataset specified by dataset_name
     """
-    data_dir = Path(Path(__file__).parent.parent, "data")
+    data_dir = Path(Path(__file__).parent.parent, "data/cv-iterables")
     if cross_validation:  # We assume CV data is already in a dict
         load_path = str(Path(data_dir, f"{args.dataset}.json"))
         data = json_tricks.load(load_path)

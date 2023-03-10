@@ -79,13 +79,12 @@ def GLAD_helmholtz_default_parameters():
         log_ls_Phi, log_sigma_Phi, log_ls_A, log_sigma_A, log_obs_noise
     )
 
-
 def GLAD_standard_default_parameters():
     log_ls_u = torch.tensor(1.0, requires_grad=True)
     log_sigma_u = torch.tensor(0.0, requires_grad=True)
     log_ls_v = torch.tensor(1.0, requires_grad=True)
     log_sigma_v = torch.tensor(0.0, requires_grad=True)
-    log_obs_noise = torch.tensor(-1.0, requires_grad=True)
+    log_obs_noise = torch.tensor(-2.0, requires_grad=True)
     return TwoKernelGPParams(
         log_ls_u, log_sigma_u, log_ls_v, log_sigma_v, log_obs_noise
     )
@@ -94,13 +93,18 @@ def GLAD_standard_default_parameters():
 def initial_parameters() -> Dict:
     _initial_parameters = dict(helmholtz=dict(), standard=dict())
 
+    """
     for dataset_name in synthetic_datasets:
+        print(dataset_name)
         _initial_parameters["helmholtz"][dataset_name] = synthetic_default_parameters()
         _initial_parameters["standard"][dataset_name] = synthetic_default_parameters()
-    _initial_parameters["helmholtz"]["GLAD_full"] = GLAD_helmholtz_default_parameters()
-    _initial_parameters["standard"]["GLAD_full"] = GLAD_standard_default_parameters()
-    _initial_parameters["helmholtz"][
-        "lasersparse"
-    ] = GLAD_helmholtz_default_parameters()
-    _initial_parameters["standard"]["lasersparse"] = GLAD_standard_default_parameters()
+    """
+    _initial_parameters["helmholtz"]["gladfull"] = GLAD_helmholtz_default_parameters()
+    _initial_parameters["standard"]["gladfull"] = GLAD_standard_default_parameters()
+    _initial_parameters["helmholtz"]["lasersparse"] = synthetic_default_parameters()
+    _initial_parameters["standard"]["lasersparse"] = synthetic_default_parameters()
+    _initial_parameters["helmholtz"]["gladsparse"] = GLAD_helmholtz_default_parameters()
+    _initial_parameters["standard"]["gladsparse"] = GLAD_standard_default_parameters()
+    _initial_parameters["helmholtz"]["laserfull"] = synthetic_default_parameters()
+    _initial_parameters["standard"]["laserfull"] = synthetic_default_parameters()
     return _initial_parameters  # Return a new object to allow resetting of params
