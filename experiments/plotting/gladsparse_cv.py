@@ -7,8 +7,8 @@ from typing import Dict, List
 import json_tricks
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-mpl.rcParams["figure.figsize"] = [4, 2]
-mpl.rcParams["figure.dpi"] = 300
+mpl.rcParams["figure.figsize"] = [8, 2]
+mpl.rcParams["figure.dpi"] = 400
 np.set_printoptions(precision=5)
 plt.rcParams.update(
     {
@@ -44,19 +44,19 @@ def plot_data_and_splits(dataset: Dict, all_results: List[Dict]):
         v["metrics"]["rmse"] if k.startswith("split_") else 0
         for results in all_results for k, v in results.items() 
     ]
-    import pdb; pdb.set_trace()
     max_rmse = np.max(all_rmses)
 
-    min_long = np.min(XY_train[:, 0])
-    max_long = np.max(XY_train[:, 0])
-    min_lat = np.min(XY_train[:, 1])
-    max_lat = np.max(XY_train[:, 1])
+    eps = 0.01
+    min_long = np.min(XY_train[:, 0]) - eps
+    max_long = np.max(XY_train[:, 0]) + eps
+    min_lat = np.min(XY_train[:, 1]) - eps
+    max_lat = np.max(XY_train[:, 1]) + eps
 
     split_long = 3
     split_lat = 3
     offset_long = (abs(max_long - min_long)) / split_long
     offset_lat = (abs(max_lat - min_lat)) / split_lat
-    fig, axes = plt.subplots(ncols=2, sharex=True, sharey=True)
+    fig, axes = plt.subplots(ncols=3, sharex=True, sharey=True)
     methods = ["Standard", "Helmholtz"]
     for results, ax, method in zip(all_results, axes, methods):
         ax.quiver(XY_train[:, 0], XY_train[:, 1], UV_train[:, 0], UV_train[:, 1])
@@ -100,6 +100,52 @@ def plot_data_and_splits(dataset: Dict, all_results: List[Dict]):
         norm=norm,
     )
 
+    cmap=cm.get_cmap("plasma")
+    axes[2].quiver(XY_train[:, 0], XY_train[:, 1], UV_train[:, 0], UV_train[:, 1])
+    axes[2].vlines(min_long + offset_long, min_lat, max_lat, colors="k")
+    axes[2].vlines(min_long + 2 * offset_long, min_lat, max_lat, colors="k")
+    axes[2].hlines(min_lat + offset_lat, min_long, max_long, colors="k")
+    axes[2].hlines(min_lat + 2 * offset_lat, min_long, max_long, colors="k")
+    axes[2].set_xlim(min_long, max_long)
+    axes[2].set_ylim(min_lat, max_lat)
+    axes[2].set_title("Difference")
+    all_diffs = [
+        v["metrics"]["rmse"] - all_results[1][k]["metrics"]["rmse"]
+        if k.startswith("split_")
+        else 0
+        for k, v in all_results[0].items()
+    ]
+    max_diff = np.max(all_diffs)
+    min_diff = np.min(all_diffs)
+    for split_name, result in all_results[0].items():
+        if not split_name.startswith("split"):
+            continue
+        split_number = int(split_name.split("_")[-1])
+        standard_rmse = result["metrics"]["rmse"]
+        helmholtz_rmse = all_results[1][split_name]["metrics"]["rmse"]
+        diff_rmse = standard_rmse - helmholtz_rmse
+        left_bound = min_long + (split_number % split_long) * offset_long
+        right_bound = left_bound + offset_long
+        upper_bound = max_lat - (split_number // split_lat) * offset_lat
+        lower_bound = upper_bound - offset_lat
+
+        yy = np.linspace(lower_bound, upper_bound, 100)
+        axes[2].fill_betweenx(
+            yy,
+            left_bound,
+            right_bound,
+            color=cmap(diff_rmse / (max_diff- min_diff)),
+            alpha=0.5,
+        )
+        print(diff_rmse)
+    norm = mpl.colors.Normalize(vmin=min_diff, vmax=max_diff)
+    divider = make_axes_locatable(axes[2])
+    cax = divider.append_axes("right", size="5%", pad=0.05)
+    cb1 = mpl.colorbar.ColorbarBase(
+        cax,
+        cmap=cmap,
+        norm=norm,
+    )
 
 if __name__ == "__main__":
     experiments_dir = Path(__file__).parent.parent
@@ -110,5 +156,6 @@ if __name__ == "__main__":
     all_results = load_results(results_dir)
     plot_data_and_splits(data, all_results)
     plt.tight_layout()
+    plt.savefig("./experiments/plotting/gladsparse_cv.png")
     plt.show()
 
