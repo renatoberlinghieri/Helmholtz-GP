@@ -102,7 +102,7 @@ def plot_data_and_splits(dataset: Dict, all_results: List[Dict]):
         norm=norm,
     )
 
-    cmap=cm.get_cmap("plasma")
+    cmap=cm.get_cmap("seismic")
     axes[2].quiver(XY_train[:, 0], XY_train[:, 1], UV_train[:, 0], UV_train[:, 1])
     axes[2].vlines(min_long + offset_long, min_lat, max_lat, colors="k")
     axes[2].vlines(min_long + 2 * offset_long, min_lat, max_lat, colors="k")
@@ -127,7 +127,7 @@ def plot_data_and_splits(dataset: Dict, all_results: List[Dict]):
         split_number = int(split_name.split("_")[-1])
         standard_rmse = result["metrics"]["rmse"]
         helmholtz_rmse = all_results[1][split_name]["metrics"]["rmse"]
-        diff_rmse = standard_rmse - helmholtz_rmse
+        diff_rmse = helmholtz_rmse - standard_rmse
         left_bound = min_long + (split_number % split_long) * offset_long
         right_bound = left_bound + offset_long
         upper_bound = max_lat - (split_number // split_lat) * offset_lat
@@ -142,7 +142,7 @@ def plot_data_and_splits(dataset: Dict, all_results: List[Dict]):
             alpha=0.5,
         )
         print(diff_rmse)
-    norm = mpl.colors.Normalize(vmin=min_diff, vmax=max_diff)
+    norm = mpl.colors.TwoSlopeNorm(vmin=min_diff, vcenter=.0, vmax=max_diff)
     divider = make_axes_locatable(axes[2])
     cax = divider.append_axes("right", size="5%", pad=0.05)
     cb1 = mpl.colorbar.ColorbarBase(
